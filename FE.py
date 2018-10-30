@@ -81,13 +81,15 @@ def low_bound(n,L):
     NL=list()
     NL.append(L[0])
     for i in range(1,len(L)):
-        NL.append(L[i]+L[i-1])
+        NL.append(L[i]+NL[i-1])
+   
     c=0
     for arr in NL:
         if(arr<n):
             c=c+1
         else:
             break
+    
     return c
 
 def DataArrangement(origin_data,attr,n_samples=300):
@@ -150,14 +152,24 @@ df['mode']=pd.factorize(df['mode'])[0]
 
 
 #4.Generator对某一类数据做增强
-generator_data=DataArrangement(df,1)
+generator_data=DataArrangement(df,0)
 print ('-------------------ok-------------------')
 print ('')
 print ('-------------------classifier-------------------')
-#5.discramiter 判断是否继续算参数
-classifier=TrainOneClassifier(df,0,1)
+#5.discramiter 判断是否继续算参数 //随机负类
+random_negetive_class=np.random.randint(low=1,high=235)
+classifier=TrainOneClassifier(df,0,random_negetive_class)
 
-classifier.predict(generator_data)
+print (classifier.predict(generator_data))
+
+
+positive_samples=(df[df['mode']==0])[['prf','rf']].values
+negitive_samples=(df[df['mode']==random_negetive_class])[['prf','rf']].values
+
+plt.scatter(positive_samples[:,0],positive_samples[:,1],c='r')
+plt.scatter(negitive_samples[:,0],negitive_samples[:,1],c='b')
+plt.scatter(generator_data[:,0],generator_data[:,1],c='g')
+plt.show()
 
 
 
